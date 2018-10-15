@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+    <div id="app">
+        <div class="text">My name is {{ name }}</div>
+        <div class="text">I'm a {{creature}}</div>
+        <div class="text">Var is not set: {{ notSet }}</div>
+    </div>
+</body>
+<script>
+
+    class LiveDomChanger {
+        constructor(init) {
+            this.el = init.el;
+            this._data = init.data; //linking objects
+            this.selector = document.querySelector(this.el);
+            this.source = this.selector.innerHTML;
+        }
+
+        render() {
+            let pattern = /{{\s*(\w+)\s*}}/g;
+            let replaced = this.source.replace(pattern, (f, r) => this._data[r]);
+            this.selector.innerHTML = replaced;
+        }
+
+        get data() {
+            setTimeout(() => this.render(), 0);//async, will run after return
+            return this._data;
+        }
+    }
+
+
+    let vue = new LiveDomChanger({
+        el: '#app',
+        data: {
+            name: 'Tom',
+            creature: 'cat'
+        }
+    });
+
+    vue.data.name = '12'; //getter will run, because 
+						//engine must link this._data = this.data
+	setTimeout(() => {vue.data.name = 'Peter';}, 2000);
+
+</script>
+
+</html>
